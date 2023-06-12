@@ -1,5 +1,25 @@
-template-repository (1.0-1) unstable; urgency=medium
+ocaml-alcotest (1.6.0-1) unstable; urgency=medium
 
-  * Initial release
+  * Team upload.
+  * New upstream release.
+  * Bump standards-version to 4.6.1.
 
- -- Tsic404 <liuheng@deepin.org>  Sat, 28 Jan 2023 13:46:49 +0800
+ -- Julien Puydt <jpuydt@debian.org>  Wed, 29 Jun 2022 11:47:40 +0200
+
+ocaml-alcotest (1.5.0-3) unstable; urgency=medium
+
+  * Fix compilation on bytecode architectures
+
+ -- Stéphane Glondu <glondu@debian.org>  Sat, 18 Dec 2021 01:56:45 +0100
+
+ocaml-alcotest (1.5.0-2) unstable; urgency=medium
+
+  * Add unlicense block in debian/copyright
+
+ -- Stéphane Glondu <glondu@debian.org>  Fri, 03 Dec 2021 09:32:21 +0100
+
+ocaml-alcotest (1.5.0-1) unstable; urgency=medium
+
+  * Initial release (Closes: #1000849)
+
+ -- Stéphane Glondu <glondu@debian.org>  Wed, 01 Dec 2021 09:02:59 +0100
