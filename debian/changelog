@@ -1,3 +1,20 @@
+ocaml-alcotest (1.7.0-2) unstable; urgency=medium
+
+  * Fix FTBFS on bytecode architectures (Closes: #1040538)
+
+ -- Stéphane Glondu <glondu@debian.org>  Wed, 12 Jul 2023 11:25:54 +0200
+
+ocaml-alcotest (1.7.0-1) unstable; urgency=medium
+
+  * Team upload.
+  * Fix d/watch.
+  * New upstream release.
+  * Drop patch (upstreamed).
+  * Bump standards-version to 4.6.2.
+  * Fix compilation with recent dune
+
+ -- Julien Puydt <jpuydt@debian.org>  Thu, 06 Jul 2023 11:56:55 +0200
+
 ocaml-alcotest (1.6.0-1) unstable; urgency=medium
 
   * Team upload.

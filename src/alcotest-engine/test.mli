@@ -130,7 +130,10 @@ type 'a extra_info =
     descriptive error messages in the case of failure. *)
 
 val check : ('a testable -> string -> 'a -> 'a -> unit) extra_info
-(** Check that two values are equal. *)
+(** Check that two values are equal.
+
+    If [check] isn't in a tail-call position, Alcotest may guess the location of
+    the check. Otherwise, use {!extra_info} to report the location. *)
 
 val check' :
   ('a testable -> msg:string -> expected:'a -> actual:'a -> unit) extra_info
@@ -144,3 +147,6 @@ val failf : (('a, Format.formatter, unit, 'b) format4 -> 'a) extra_info
 
 val check_raises : (string -> exn -> (unit -> unit) -> unit) extra_info
 (** Check that an exception is raised. *)
+
+val skip : unit -> 'a
+(** Skip the current test case. *)

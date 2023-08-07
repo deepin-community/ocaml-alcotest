@@ -53,7 +53,7 @@ let global_stanza ~libraries ~js filenames =
     (pp_sexp_list Fmt.string) bases
     Fmt.(list string)
     libraries
-    (if js then "(modes native js)" else "(modes native)")
+    (if js then "(modes exe js)" else "(modes exe)")
     (pp_sexp_list Fmt.string) bases
 
 let example_rule_stanza ~js ~expect_failure filename =
@@ -155,7 +155,7 @@ let expect_failure =
   Arg.(value & flag doc)
 
 let cmd =
-  let info = Cmd.info ~version:"1.5.0-29-g6be328d" "gen_dune_rules" in
+  let info = Cmd.info ~version:"%%VERSION%%" "gen_dune_rules" in
   Cmd.v info Term.(const main $ package $ expect_failure $ libraries $ js)
 
 let () = exit @@ Cmd.eval cmd

@@ -15,7 +15,7 @@ Build-Depends:
  libuutf-ocaml-dev,
  ocaml-odoc,
  dh-ocaml
-Standards-Version: 4.6.1
+Standards-Version: 4.6.2
 Rules-Requires-Root: no
 Homepage: https://github.com/mirage/alcotest
 Vcs-Git: https://salsa.debian.org/ocaml-team/ocaml-alcotest.git
