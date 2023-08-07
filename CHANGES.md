@@ -1,8 +1,25 @@
-### dev
+### 1.7.0 (2023-02-24)
 
-### v1.6.0 (2022-06-24)
+- compile with MSVC (#369, @jonahbeckfordm review by @TheLortex
+  and @MisterDA)
 
-- Fix a bug when running test concurently. Alcotest could fail to
+- Allow skipping a test case from inside the test case (#368, @apeschar)
+
+- Fix compilation on bytecode architectures (#335, @glondu)
+
+- Get `alcotest_stubs.c` to compile with MSVC (#369, @jonahbeckford)
+
+- Try automatically reporting the location of calls to Alcotest.check.
+  (#366, @MisterDA, review by @TheLortex)
+
+- Detect that Alcotest is running in CI and change output accordingly.
+  (#364, @MisterDA)
+
+- Upgrade to `dune >= 3.0`. (#360, @MisterDA)
+
+### 1.6.0 (2022-06-24)
+
+- Fix a bug when running test concurrently. Alcotest could fail to
   output the content of the log file. (#353, @hhugo)
 
 - Require Cmdliner.1.1.0. (#339, @MisterDA)

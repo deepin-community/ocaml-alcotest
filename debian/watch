@@ -1,2 +1,2 @@
 version=4
-https://github.com/mirage/alcotest/releases .*-v?([\d\.]+)\.tbz
+https://github.com/mirage/alcotest/tags .*/([\d\.]+)\.tar\.gz

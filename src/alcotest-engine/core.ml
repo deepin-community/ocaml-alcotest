@@ -19,6 +19,7 @@ open! Import
 open Model
 
 exception Check_error of unit Fmt.t
+exception Skip
 
 let () =
   let print_error =
@@ -120,12 +121,12 @@ module Make (P : Platform.MAKER) (M : Monad.S) = struct
     Pp.suite_results ~log_dir t.config
 
   let pp_event ~isatty ~prior_error ~tests_so_far t =
-    let cfg = t.config in
+    let config = t.config in
     let selector_on_failure =
-      (not prior_error) && not (cfg#verbose || cfg#show_errors)
+      (not prior_error) && not (config#verbose || config#show_errors)
     in
-    if not cfg#json then
-      Pp.event ~isatty ~compact:cfg#compact ~max_label:t.max_label
+    if not config#json then
+      Pp.event ~isatty ~compact:config#compact ~max_label:t.max_label
         ~doc_of_test_name:(Suite.doc_of_test_name t.suite)
         ~selector_on_failure ~tests_so_far
     else Fmt.nop
@@ -182,6 +183,7 @@ module Make (P : Platform.MAKER) (M : Monad.S) = struct
          | Check_error err ->
              let err = Fmt.(err ++ const string (bt ())) in
              `Error (path, err)
+         | Skip -> `Skip
          | Failure s -> exn path "failure" Fmt.(const string s)
          | Invalid_argument s -> exn path "invalid" Fmt.(const string s)
          | e -> exn path "exception" Fmt.(const exn e))
@@ -389,12 +391,16 @@ module Make (P : Platform.MAKER) (M : Monad.S) = struct
       (* Only print inside the concurrency monad *)
       let* () = M.return () in
       let open Fmt in
+      if config#ci = `Github_actions then
+        pr "::group::{%a}\n" Suite.pp_name t.suite;
       pr "Testing %a.@," (Pp.quoted Fmt.(styled `Bold Suite.pp_name)) t.suite;
       pr "@[<v>%a@]"
         (styled `Faint (fun ppf () ->
              pf ppf "This run has ID %a.@,@," (Pp.quoted string) t.run_id))
         ();
-      run_tests t () args
+      let r = run_tests t () args in
+      if config#ci = `Github_actions then pr "::endgroup::\n";
+      r
     in
     match (test_failures, t.config#and_exit) with
     | 0, true -> exit 0
@@ -405,9 +411,10 @@ module Make (P : Platform.MAKER) (M : Monad.S) = struct
   let run' config name (tl : unit test list) = run_with_args' config name () tl
 
   let run_with_args ?and_exit ?verbose ?compact ?tail_errors ?quick_only
-      ?show_errors ?json ?filter ?log_dir ?bail ?record_backtrace =
+      ?show_errors ?json ?filter ?log_dir ?bail ?record_backtrace ?ci =
     Config.User.kcreate run_with_args' ?and_exit ?verbose ?compact ?tail_errors
       ?quick_only ?show_errors ?json ?filter ?log_dir ?bail ?record_backtrace
+      ?ci
 
   let run = Config.User.kcreate run'
 end
