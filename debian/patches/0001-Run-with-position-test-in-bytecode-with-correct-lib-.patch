@@ -1,0 +1,81 @@
+From: =?utf-8?q?Antonin_D=C3=A9cimo?= <antonin@tarides.com>
+Date: Wed, 1 Mar 2023 17:27:28 +0100
+Subject: Run with-position test in bytecode with correct lib path
+
+Run the bytecode executable with ocamlrun to always have debug
+information. Debug info is currently removed on complete bytecode
+executables with ocamlc' -output-complete-exe. CAML_LD_LIBRARY_PATH
+must also (portably) point to the directory containing the shared
+library build from Alcotest C stubs.
+
+Origin: https://github.com/mirage/alcotest/commit/219dc8b3341a21982c980a6072e659bbf0e97577
+---
+ .../source_code_position/caml_ld_library_path.ml      | 19 +++++++++++++++++++
+ test/e2e/alcotest/source_code_position/dune           | 19 +++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
+ create mode 100644 test/e2e/alcotest/source_code_position/caml_ld_library_path.ml
+
+diff --git a/test/e2e/alcotest/source_code_position/caml_ld_library_path.ml b/test/e2e/alcotest/source_code_position/caml_ld_library_path.ml
+new file mode 100644
+index 0000000..23db76f
+--- /dev/null
++++ b/test/e2e/alcotest/source_code_position/caml_ld_library_path.ml
+@@ -0,0 +1,19 @@
++let ( / ) = Filename.concat
++let sep = if Sys.win32 then ";" else ":"
++
++let () =
++  if Array.length Sys.argv <> 2 then exit 1;
++  let test = "." / Sys.argv.(1) in
++  let lib = ".." / ".." / ".." / ".." / "src" / "alcotest" in
++  let paths =
++    match Sys.getenv "CAML_LD_LIBRARY_PATH" with
++    | paths -> lib ^ sep ^ paths
++    | exception Not_found -> lib
++  in
++  Unix.putenv "CAML_LD_LIBRARY_PATH" paths;
++  let child =
++    Unix.create_process test [||] Unix.stdin Unix.stdout Unix.stderr
++  in
++  match Unix.waitpid [ WUNTRACED ] child with
++  | _, WEXITED c -> exit c
++  | _ -> exit 1
+diff --git a/test/e2e/alcotest/source_code_position/dune b/test/e2e/alcotest/source_code_position/dune
+index 775d648..3a8635a 100644
+--- a/test/e2e/alcotest/source_code_position/dune
++++ b/test/e2e/alcotest/source_code_position/dune
+@@ -4,9 +4,22 @@
+    (ALCOTEST_COLOR never)
+    (ALCOTEST_SHOW_ERRORS true))))
+ 
++; Run the bytecode executable with ocamlrun to always have debug
++; information. Debug info is currently removed on complete bytecode
++; executables with ocamlc' -output-complete-exe. CAML_LD_LIBRARY_PATH
++; must also (portably) point to the directory containing the shared
++; library build from Alcotest C stubs.
++
++(executable
++ (name caml_ld_library_path)
++ (libraries unix)
++ (modules caml_ld_library_path))
++
+ (executable
+  (name test_source_code_position)
+- (libraries alcotest astring))
++ (libraries alcotest astring)
++ (modules test_source_code_position)
++ (modes exe byte))
+ 
+ (rule
+  (target with-position.actual)
+@@ -18,7 +31,9 @@
+     (or 1 2 124 125)
+     (with-outputs-to
+      %{target}
+-     (run %{dep:test_source_code_position.exe}))))))
++     (run
++      %{dep:caml_ld_library_path.exe}
++      %{dep:test_source_code_position.bc}))))))
+ 
+ (rule
+  (target without-position.actual)
